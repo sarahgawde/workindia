@@ -19,8 +19,8 @@ import hashlib
 def user_login(request): #login a user
     username = request.data.get('username')
     passw=request.data.get('password')
-    en_pass = hashlib.sha384(notes.encode())
-	en_pass = en_notes.hexdigest()
+    en_pass = hashlib.sha384(passw.encode())
+    en_pass = en_pass.hexdigest()
     u=authenticate(username=username,password=en_pass)
     if not u:
         return Response({'status':'failure','data':{'message':'wrong username or password'}},status=HTTP_400_BAD_REQUEST)
@@ -36,8 +36,8 @@ def user_register(request):
 	first_name=request.data.get('first_name')
 	last_name = request.data.get('last_name')
 	passw = request.data.get('password')
-	en_pass = hashlib.sha384(notes.encode())
-	en_pass = en_notes.hexdigest()
+	en_pass = hashlib.sha384(passw.encode())
+	en_pass = en_pass.hexdigest()
 	if User.objects.filter(username=username). exists():
 		return Response({'status':'failure','data':{'message':'Username already exists'}},status=HTTP_400_BAD_REQUEST)
 	user_obj=User.objects.create_user(username=username,password=en_pass,first_name=first_name,last_name=last_name)
