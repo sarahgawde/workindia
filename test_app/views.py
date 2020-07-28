@@ -9,6 +9,8 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from test_app.serializers import UserSerializer
+import hashlib 
+
 
 #endpoint for user signup
 @csrf_exempt
@@ -53,16 +55,17 @@ def user_logout(request):
 @api_view(['GET'])
 def notes_list(request,pk):
 	try :
-		user = UserDetails.objects.get(pk=pk)
+		user = UserDetails.objects.filter(pk=pk)
 	except UserDetails.DoesNotExist:
 		return Response({'status':'failure','data':{'message':'User does not exists'}},status=HTTP_400_BAD_REQUEST)
 
 	if request.method == 'GET' :
-		user_serializer = UserSerializer(user)
-		return Response({'status': 'success', 'data': {user.note}}, status=HTTP_200_OK)
+		user_serializer = UserSerializer(user, many=True)
+	return Response({'status': 'success', 'data':{'message':user_serializer.data}}, status=HTTP_200_OK)
+		# return Response({'status': 'success', 'data': {'message': user.note}}, status=HTTP_20user_serializer0_OK)
 		
 @api_view(['POST'])
-def get_user_info(request,pk):
+def get_notes_info(request,pk):
 	
 	try :
 		user = UserDetails.objects.get(pk=pk)
@@ -71,6 +74,10 @@ def get_user_info(request,pk):
 
 	if request.method=='POST' :
 		notes = request.data.get('notes')
-		user.note.append(notes)
+		en_notes = hashlib.sha384(notes.encode())
+		en_notes = en_notes.hexdigest()
+		print(en_notes)
+		print(notes)
+		user.note.append(en_notes)
 		user.save()
 	return Response({'status': 'success', 'data': {'message': 'Notes Added', 'notes' : user.note}}, status=HTTP_200_OK)
