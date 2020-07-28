@@ -78,10 +78,11 @@ def get_notes_info(request,pk):
 
 	if request.method=='POST' :
 		notes = request.data.get('notes')
-		en_notes = hashlib.sha384(notes.encode())
-		en_notes = en_notes.hexdigest()
-		print(en_notes)
-		print(notes)
-		user.note.append(en_notes)
+		if notes is not None:
+			en_notes = hashlib.sha384(notes.encode())
+			en_notes = en_notes.hexdigest()
+			print(en_notes)
+			print(notes)
+			user.note.append(en_notes)
 		user.save()
 	return Response({'status': 'success', 'data': {'message': 'Notes Added', 'notes' : user.note}}, status=HTTP_200_OK)
